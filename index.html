@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Dictionary</title>
+		<style>
+			*
+			{
+				font-family: monospace;
+			}
+
+			body
+			{
+				margin: 32px;
+			}
+
+			img
+			{
+				display: block;
+			}
+
+			label
+			{
+				display: inline-block;
+				width: 64px;
+			}
+
+			textarea
+			{
+				height: 8em;
+				vertical-align: top;
+				width: 32em;
+			}
+
+			.form-group
+			{
+				margin: 4px 0;
+			}
+		</style>
+	</head>
+	<body>
+		<p>Dictionary</p>
+		<div class="form">
+			<div class="form-group">
+				<label for="file">File</label>
+				<input id="file" type="file">
+			</div>
+			<div class="form-group">
+				<label for="minimum">Minimum</label>
+				<input id="minimum" type="number" value="4"> (letters per word)
+			</div>
+			<div class="form-group">
+				<label></label>
+				<button id="button">Go</button>
+			</div>
+		</div>
+		<pre id="result" hidden></pre>
+		<p>©2020 Jinri</p>
+		<script>
+			dictionary = {};
+
+			function build(text)
+			{
+				var words = text.split(/[\s,.:\/()]/);
+
+				if(!words[words.length-1])
+				{
+					words.pop();
+				}
+				
+				for(const i in words)
+				{
+					var word = words[i];
+
+					if(dictionary.hasOwnProperty(word))
+					{
+						dictionary[word]++;
+					}
+					else
+					{
+						dictionary[word] = 1;
+					}
+				}
+
+				var array = [];
+
+				for(var word in dictionary)
+				{
+					if(word.length > minimum.value)
+					{
+						array.push([word, dictionary[word]]);
+					}
+				}
+
+				array.sort(function(a, b)
+				{
+					return b[1]-a[1];
+				});
+
+				var html = '';
+
+				for(const i in array)
+				{
+					var entry = array[i];
+					html += entry[0]+' ['+entry[1]+']\n';
+				}
+
+				result.innerHTML = html;
+				result.hidden = false;
+			}
+
+			button.onclick = function()
+			{
+				var reader = new FileReader();
+
+				reader.onload = function()
+				{
+					build(reader.result);	
+				}
+
+				reader.readAsText(file.files[0]);
+			}
+		</script>
+	</body>
+</html>
